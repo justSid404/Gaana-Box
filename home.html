@@ -1,0 +1,136 @@
+<html>
+
+  <head>
+
+    <title>Gaana Box</title>
+
+    <link rel="stylesheet" href="styles/default-theme.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+
+  </head>
+
+  <body id="page-background" class="page-background">
+
+    <div id="music-player-main-container" class="music-player-main-container">
+
+      <div id="now-playing-card" class="now-playing-card">
+
+        <div id="now-playing-header-section-div" class="now-playing-header-section-div">
+
+          <div id="minimize-now-playing-card-button-div" class="minimize-now-playing-card-button-div">
+
+            <button id="minimize-now-playing-card-button" class="minimize-now-playing-card-button">
+              <svg id="minimize-now-playing-card-button-icon" class="minimize-now-playing-card-button-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M7 10L12 15L17 10" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
+            </button>
+
+          </div>
+
+          <div id="now-playing-header-div" class="now-playing-header-div">
+
+            <p id="now-playing-header" class="now-playing-header">Now Playing</p>
+
+          </div>
+
+        </div>
+
+        <div id="album-cover-div" class="album-cover-div">
+
+          <img id="album-cover" class="album-cover" src="Images/default-cover-art.png" alt="default-cover-art">
+
+        </div>
+
+        <div id="song-info-and-control-div" class="song-info-and-control-div">
+
+          <div id="song-name-div" class="song-name-div">
+            <p id="song-name" class="song-name">-</p>
+          </div>
+
+          <div id="song-artist-name-div" class="song-artist-name-div">
+            <p id="song-artist-name" class="song-artist-name">-</p>
+          </div>
+
+          <div id="song-time-and-bar-div" class="song-time-and-bar-div">
+
+            <div id="song-time-div" class="song-time-div">
+              <p id="song-start-time" class="song-start-time">00:00</p>
+              <p id="song-end-time" class="song-end-time">00:00</p>
+            </div>
+
+            <div id="song-time-bar-div" class="song-time-bar-div">
+              <div id="song-time-bar-blank" class="song-start-time-blank">
+                <div id="song-time-bar-filled" class="song-time-bar-filled"></div>
+              </div>
+            </div>
+
+          </div>
+
+          <div id="media-controls-div" class="media-controls-div">
+
+            <div id="shuffle-song-button-div" class="shuffle-song-button-div">
+              
+              <button id="shuffle-song-button" class="media-control-button">
+                <svg id="shuffle-song-button-icon" class="media-control-button-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M18 4L21 7M21 7L18 10M21 7H17C16.0707 7 15.606 7 15.2196 7.07686C13.6329 7.39249 12.3925 8.63288 12.0769 10.2196C12 10.606 12 11.0707 12 12C12 12.9293 12 13.394 11.9231 13.7804C11.6075 15.3671 10.3671 16.6075 8.78036 16.9231C8.39397 17 7.92931 17 7 17H3M18 20L21 17M21 17L18 14M21 17H17C16.0707 17 15.606 17 15.2196 16.9231C15.1457 16.9084 15.0724 16.8917 15 16.873M3 7H7C7.92931 7 8.39397 7 8.78036 7.07686C8.85435 7.09158 8.92758 7.1083 9 7.12698" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
+              </button>
+              
+            </div>
+
+            <div id="prev-song-button-div" class="prev-song-button-div">
+              
+              <button id="prev-song-button" class="media-control-button">
+                <svg id="prev-song-button-icon" class="media-control-button-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M2.75 20C2.75 20.5523 3.19772 21 3.75 21C4.30228 21 4.75 20.5523 4.75 20L4.75 4C4.75 3.44772 4.30229 3 3.75 3C3.19772 3 2.75 3.44772 2.75 4V20Z" fill="#ffffff"></path> <path d="M20.75 19.0526C20.75 20.4774 19.1383 21.305 17.9803 20.4748L7.51062 12.9682C6.50574 12.2477 6.54467 10.7407 7.5854 10.073L18.0551 3.35665C19.2198 2.60946 20.75 3.44583 20.75 4.82961L20.75 19.0526Z" fill="#ffffff"></path> </g></svg>
+              </button>
+              
+            </div>
+    
+            <div id="play-pause-button-div" class="play-pause-button-div">
+              
+              <button id="play-pause-button" class="media-control-button">
+                <svg id="play-pause-button-icon" class="media-control-button-icon" fill="#ffffff" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 460.114 460.114" xml:space="preserve" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g> <g> <path d="M393.538,203.629L102.557,5.543c-9.793-6.666-22.468-7.372-32.94-1.832c-10.472,5.538-17.022,16.413-17.022,28.26v396.173 c0,11.846,6.55,22.721,17.022,28.26c10.471,5.539,23.147,4.834,32.94-1.832l290.981-198.087 c8.746-5.954,13.98-15.848,13.98-26.428C407.519,219.477,402.285,209.582,393.538,203.629z"></path> </g> </g> </g></svg>
+              </button>
+    
+            </div>
+    
+            <div id="next-song-button-div" class="next-song-button-div">
+              
+              <button id="next-song-button" class="media-control-button">
+                <svg id="next-song-button-icon" class="media-control-button-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M21 4C21 3.44772 20.5523 3 20 3C19.4477 3 19 3.44772 19 4V20C19 20.5523 19.4477 21 20 21C20.5523 21 21 20.5523 21 20V4Z" fill="#ffffff"></path> <path d="M3 4.94743C3 3.5226 4.61175 2.69498 5.7697 3.52521L16.2394 11.0318C17.2443 11.7523 17.2053 13.2593 16.1646 13.927L5.69492 20.6434C4.53019 21.3905 3 20.5542 3 19.1704V4.94743Z" fill="#ffffff"></path> </g></svg>
+              </button>
+              
+            </div>
+    
+            <div id="repeat-song-button-div" class="repeat-song-button-div">
+              
+              <button id="repeat-song-button" class="media-control-button">
+                <svg id="repeat-song-button-icon" class="media-control-button-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M17 2L21 6M21 6L17 10M21 6H7.8C6.11984 6 5.27976 6 4.63803 6.32698C4.07354 6.6146 3.6146 7.07354 3.32698 7.63803C3 8.27976 3 9.11984 3 10.8V11M3 18H16.2C17.8802 18 18.7202 18 19.362 17.673C19.9265 17.3854 20.3854 16.9265 20.673 16.362C21 15.7202 21 14.8802 21 13.2V13M3 18L7 22M3 18L7 14" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
+              </button>
+              
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <div id="musicList" class="musicList">
+
+        <div id="scanned-music-list" class="scanned-music-list">
+
+        </div>
+
+        <button id="getMusic" class="getMusic" onclick="getSongs()">Select Music Folder</button>
+
+      </div>
+
+    </div>
+
+    <script src="scripts/music-player.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js"></script>
+
+  </body>
+  
+
+</html>
