@@ -15,7 +15,7 @@ const selectFolder = document.getElementById('getMusic');
 
 const audio = new Audio();
 let songLength = 0;
-
+let songListExpanded = 0;
 let intervalId = "";
 
 async function getSongs() {
@@ -57,6 +57,7 @@ async function getSongs() {
 
         jsmediatags.read(file, {
           onSuccess: ({ tags }) => {
+
             if(tags.artist){
               document.getElementById('song-artist-name').innerHTML = tags.artist;
             } else {
@@ -99,6 +100,73 @@ async function getSongs() {
 
   } catch (err) {
       console.error(err);
+  }
+
+  if(document.getElementById('scanned-music-list').innerHTML.length > 0 && selectFolder) {
+    document.getElementById('getMusic').remove();
+
+    document.getElementById('music-list-controls-div').innerHTML = '<button id="expand-music-list" class="music-list-controls"> <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"> <g transform="rotate(180 12 12)"> <path d="M7 10L12 15L17 10" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path> </g> </svg> </button> <button id="close-music-list" class="music-list-controls"> <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g id="Menu / Close_SM"> <path id="Vector" d="M16 16L12 12M12 12L8 8M12 12L16 8M12 12L8 16" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g> </g></svg> </button>';
+
+    
+
+    document.getElementById('close-music-list').addEventListener('click', () => {
+      document.getElementById('scanned-music-list').innerHTML = '';
+
+      document.getElementById('expand-music-list').remove();
+      document.getElementById('close-music-list').remove();
+
+      const btn = document.createElement("button");
+      btn.id = "getMusic";
+      btn.className = "getMusic";
+      btn.textContent = "Select Music Folder";
+      document.getElementById("musicList").appendChild(btn);
+
+      document.getElementById('getMusic').setAttribute('onclick', 'getSongs()');
+
+      if (window.innerWidth / window.innerHeight <= 1) {
+        songListExpanded = 0;
+        document.getElementById('scanned-music-list').style.height = '0%';
+
+        document.getElementById('album-cover-div').style.display = 'inline-block';
+        document.getElementById('now-playing-header-section-div').style.display = 'flex';
+        document.getElementById('now-playing-card').style.height = '80%';
+
+        document.getElementById('musicList').style.justifyContent = 'space-around';
+      }
+
+    });
+
+    document.getElementById('expand-music-list').addEventListener('click', () => {
+
+      if(songListExpanded == 0) {
+
+        songListExpanded = 1;
+        document.getElementById('expand-music-list').innerHTML = '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M7 10L12 15L17 10" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>';
+
+        document.getElementById('scanned-music-list').style.height = '80%';
+
+        document.getElementById('album-cover-div').style.display = 'none';
+        document.getElementById('now-playing-header-section-div').style.display = 'none';
+        document.getElementById('now-playing-card').style.height = '30%';
+
+        document.getElementById('musicList').style.justifyContent = 'space-around';
+
+      } else {
+
+        songListExpanded = 0;
+        document.getElementById('expand-music-list').innerHTML = '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"> <g transform="rotate(180 12 12)"> <path d="M7 10L12 15L17 10" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path> </g> </svg>';
+
+        document.getElementById('scanned-music-list').style.height = '0%';
+
+        document.getElementById('album-cover-div').style.display = 'inline-block';
+        document.getElementById('now-playing-header-section-div').style.display = 'flex';
+        document.getElementById('now-playing-card').style.height = '80%';
+
+        document.getElementById('musicList').style.removeProperty('justify-content');
+
+      }
+    });
+
   }
   
 }
