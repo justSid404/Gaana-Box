@@ -8,8 +8,13 @@ const songTimeBarFilled = document.getElementById('song-time-bar-filled');
 const shuffleBtnElement = document.getElementById('shuffle-song-button');
 const repeatBtnElement = document.getElementById('repeat-song-button');
 
+const playlistEl = document.querySelector(".scanned-music-list");
+
 const repeatStages = [0,1,2];
 let repeatDefault = repeatStages[0];
+
+let shuffledSongList = [];
+let shuffleSongIndex = null;
 
 const selectFolder = document.getElementById('getMusic');
 
@@ -21,7 +26,6 @@ let intervalId = "";
 async function getSongs() {
   try {
     const dirHandle = await window.showDirectoryPicker();
-    const playlistEl = document.querySelector(".scanned-music-list");
     playlistEl.innerHTML = "";
     
     const audioFiles = [];
@@ -29,94 +33,25 @@ async function getSongs() {
     let playlistHTMLData = "";
 
     for await (const entry of dirHandle.values()) {
-        if (entry.kind === "file" && entry.name.toLowerCase().endsWith(".mp3")) {
-            audioFiles.push(entry);
-        }
+      if (entry.kind === "file" && entry.name.toLowerCase().endsWith(".mp3")) {
+        audioFiles.push(entry);
+      }
     }
 
     if (audioFiles.length === 0) {
-        playlistEl.innerHTML = "<p>No MP3 files found.</p>";
-        return;
+      playlistEl.innerHTML = "<p>No MP3 files found.</p>";
+      return;
     }
 
     audioFiles.sort();
-    
-    audioFiles.forEach((fileHandle, index) => {
-      const playlistItem = document.createElement("div");
-      playlistItem.id = "music-list-item-" + index;
-      playlistItem.className = "music-list-item";
-      playlistItem.textContent = fileHandle.name;
+    //shuffledSongList = audioFiles;
+    shuffledSongList = structuredClone(audioFiles);
 
-      //playlistEl.innerHTML += playlistHTMLData;
-      playlistEl.appendChild(playlistItem);
+    if(shuffleBtnElement.hasAttribute('data-shuffle-state') && shuffleBtnElement.dataset.shuffleState == 1) {
+      shuffleArray(shuffledSongList);
+    }
 
-      document.getElementById('music-list-item-'+index).dataset.songId = index;
-
-      document.getElementById('music-list-item-'+index).onclick = async () => {
-        const songName = fileHandle.name;
-        const file = await fileHandle.getFile();
-        const url = URL.createObjectURL(file);
-        document.getElementById('song-name-div').innerHTML = '<p id="song-name" class="song-name">'+String(songName).substring(0, songName.length - 4)+'</p>';
-        playMusic(url);
-
-        jsmediatags.read(file, {
-          onSuccess: ({ tags }) => {
-
-            if(tags.artist){
-              document.getElementById('song-artist-name').innerHTML = tags.artist;
-            } else {
-              document.getElementById('song-artist-name').innerHTML = "Unknown artist";
-            }       
-
-            if (tags.picture) {
-              const picture = tags.picture;
-              const base64String = picture.data.map(byte => String.fromCharCode(byte)).join("");
-
-              const imageUrl = `data:${picture.format};base64,${btoa(base64String)}`;
-
-              albumCoverArt.style.opacity = 0;
-
-              setTimeout(() => {
-                albumCoverArt.src = imageUrl;
-
-                albumCoverArt.style.opacity = 1;
-              }, 250);
-
-            } else {
-
-              albumCoverArt.style.opacity = 0;
-
-              setTimeout(() => {
-                albumCoverArt.src = "Images/default-cover-art.png";
-
-                albumCoverArt.style.opacity = 1;
-              }, 250);
-              
-            }
-
-          },
-          onError: (error) => {
-            console.error("ID3 Read Error:", error);
-          }
-        });
-
-        playBtnElement.dataset.songId = index;
-
-        if(index > 0) {
-          prevBtnElement.dataset.songId = index-1;
-        } else {
-          prevBtnElement.dataset.songId = audioFiles.length - 1;
-        }
-
-        if(index < audioFiles.length - 1) {
-          nextBtnElement.dataset.songId = index+1;
-        } else {
-          nextBtnElement.dataset.songId = 0;
-        }
-
-      };
-
-    });
+    renderSongList(audioFiles);
 
   } catch (err) {
       console.error(err);
@@ -127,69 +62,118 @@ async function getSongs() {
 
     document.getElementById('music-list-controls-div').innerHTML = '<button id="expand-music-list" class="music-list-controls"> <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"> <g transform="rotate(180 12 12)"> <path d="M7 10L12 15L17 10" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path> </g> </svg> </button> <button id="close-music-list" class="music-list-controls"> <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g id="Menu / Close_SM"> <path id="Vector" d="M16 16L12 12M12 12L8 8M12 12L16 8M12 12L8 16" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g> </g></svg> </button>';
 
-    document.getElementById('close-music-list').addEventListener('click', () => {
-      document.getElementById('scanned-music-list').innerHTML = '';
-
-      document.getElementById('expand-music-list').remove();
-      document.getElementById('close-music-list').remove();
-
-      const btn = document.createElement("button");
-      btn.id = "getMusic";
-      btn.className = "getMusic";
-      btn.textContent = "Select Music Folder";
-      document.getElementById("musicList").appendChild(btn);
-
-      document.getElementById('getMusic').setAttribute('onclick', 'getSongs()');
-
-      if (window.innerWidth / window.innerHeight <= 1) {
-        songListExpanded = 0;
-        document.getElementById('scanned-music-list').style.height = '0%';
-
-        document.getElementById('album-cover-div').style.display = 'inline-block';
-        document.getElementById('now-playing-header-section-div').style.display = 'flex';
-        document.getElementById('now-playing-card').style.height = '80%';
-
-        document.getElementById('musicList').style.justifyContent = 'space-around';
-      }
-
-    });
-
-    document.getElementById('expand-music-list').addEventListener('click', () => {
-
-      if(songListExpanded == 0) {
-
-        songListExpanded = 1;
-        document.getElementById('expand-music-list').innerHTML = '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M7 10L12 15L17 10" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>';
-
-        document.getElementById('scanned-music-list').style.height = '80%';
-
-        document.getElementById('album-cover-div').style.display = 'none';
-        document.getElementById('now-playing-header-section-div').style.display = 'none';
-        document.getElementById('now-playing-card').style.height = '30%';
-
-        document.getElementById('musicList').style.justifyContent = 'space-around';
-
-        document.getElementById('close-music-list').style.display = 'none';
-
-      } else {
-
-        songListExpanded = 0;
-        document.getElementById('expand-music-list').innerHTML = '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"> <g transform="rotate(180 12 12)"> <path d="M7 10L12 15L17 10" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path> </g> </svg>';
-
-        document.getElementById('scanned-music-list').style.height = '0%';
-
-        document.getElementById('album-cover-div').style.display = 'inline-block';
-        document.getElementById('now-playing-header-section-div').style.display = 'flex';
-        document.getElementById('now-playing-card').style.height = '80%';
-
-        document.getElementById('musicList').style.removeProperty('justify-content');
-        document.getElementById('close-music-list').style.display = 'inline-block';
-
-      }
-    });
+    renderScannedListControls();
+    
 
   }
   
+}
+
+function renderSongList(audioFiles) {
+  
+  audioFiles.forEach((fileHandle, index) => {
+  const playlistItem = document.createElement("div");
+  playlistItem.id = "music-list-item-" + index;
+  playlistItem.className = "music-list-item";
+  playlistItem.textContent = fileHandle.name;
+
+  //playlistEl.innerHTML += playlistHTMLData;
+  playlistEl.appendChild(playlistItem);
+
+  document.getElementById('music-list-item-'+index).dataset.songId = index;
+
+  document.getElementById('music-list-item-'+index).onclick = async () => {
+    const songName = fileHandle.name;
+    const file = await fileHandle.getFile();
+    const url = URL.createObjectURL(file);
+    document.getElementById('song-name-div').innerHTML = '<p id="song-name" class="song-name">'+String(songName).substring(0, songName.length - 4)+'</p>';
+    playMusic(url);
+
+    updateMusicPlayer(file);
+
+    playBtnElement.dataset.songId = index;
+
+    if(index > 0) {
+      prevBtnElement.dataset.songId = index-1;
+    } else {
+      prevBtnElement.dataset.songId = audioFiles.length - 1;
+    }
+
+    if(index < audioFiles.length - 1) {
+      nextBtnElement.dataset.songId = index+1;
+    } else {
+      nextBtnElement.dataset.songId = 0;
+    }
+
+  };
+
+});
+
+}
+
+function renderScannedListControls() {
+
+  document.getElementById('close-music-list').addEventListener('click', () => {
+
+    document.getElementById('scanned-music-list').innerHTML = '';
+
+    document.getElementById('expand-music-list').remove();
+    document.getElementById('close-music-list').remove();
+
+    const btn = document.createElement("button");
+    btn.id = "getMusic";
+    btn.className = "getMusic";
+    btn.textContent = "Select Music Folder";
+    document.getElementById("musicList").appendChild(btn);
+
+    document.getElementById('getMusic').setAttribute('onclick', 'getSongs()');
+
+    if (window.innerWidth / window.innerHeight <= 1) {
+      songListExpanded = 0;
+      document.getElementById('scanned-music-list').style.height = '0%';
+
+      document.getElementById('album-cover-div').style.display = 'inline-block';
+      document.getElementById('now-playing-header-section-div').style.display = 'flex';
+      document.getElementById('now-playing-card').style.height = '80%';
+
+      document.getElementById('musicList').style.justifyContent = 'space-around';
+    }
+
+  });
+
+  document.getElementById('expand-music-list').addEventListener('click', () => {
+
+    if(songListExpanded == 0) {
+
+      songListExpanded = 1;
+      document.getElementById('expand-music-list').innerHTML = '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M7 10L12 15L17 10" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>';
+
+      document.getElementById('scanned-music-list').style.height = '80%';
+
+      document.getElementById('album-cover-div').style.display = 'none';
+      document.getElementById('now-playing-header-section-div').style.display = 'none';
+      document.getElementById('now-playing-card').style.height = '30%';
+
+      document.getElementById('musicList').style.justifyContent = 'space-around';
+
+      document.getElementById('close-music-list').style.display = 'none';
+
+    } else {
+
+      songListExpanded = 0;
+      document.getElementById('expand-music-list').innerHTML = '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"> <g transform="rotate(180 12 12)"> <path d="M7 10L12 15L17 10" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path> </g> </svg>';
+
+      document.getElementById('scanned-music-list').style.height = '0%';
+
+      document.getElementById('album-cover-div').style.display = 'inline-block';
+      document.getElementById('now-playing-header-section-div').style.display = 'flex';
+      document.getElementById('now-playing-card').style.height = '80%';
+
+      document.getElementById('musicList').style.removeProperty('justify-content');
+      document.getElementById('close-music-list').style.display = 'inline-block';
+
+    }
+  });
 }
 
 function playMusic(songName) {
@@ -217,6 +201,51 @@ function playMusic(songName) {
   playBtnElement.innerHTML = '<svg id="play-pause-pause-button-icon" class="media-control-button-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path fill-rule="evenodd" clip-rule="evenodd" d="M5.163 3.819C5 4.139 5 4.559 5 5.4v13.2c0 .84 0 1.26.163 1.581a1.5 1.5 0 0 0 .656.655c.32.164.74.164 1.581.164h.2c.84 0 1.26 0 1.581-.163a1.5 1.5 0 0 0 .656-.656c.163-.32.163-.74.163-1.581V5.4c0-.84 0-1.26-.163-1.581a1.5 1.5 0 0 0-.656-.656C8.861 3 8.441 3 7.6 3h-.2c-.84 0-1.26 0-1.581.163a1.5 1.5 0 0 0-.656.656zm9 0C14 4.139 14 4.559 14 5.4v13.2c0 .84 0 1.26.164 1.581a1.5 1.5 0 0 0 .655.655c.32.164.74.164 1.581.164h.2c.84 0 1.26 0 1.581-.163a1.5 1.5 0 0 0 .655-.656c.164-.32.164-.74.164-1.581V5.4c0-.84 0-1.26-.163-1.581a1.5 1.5 0 0 0-.656-.656C17.861 3 17.441 3 16.6 3h-.2c-.84 0-1.26 0-1.581.163a1.5 1.5 0 0 0-.655.656z" fill="#ffffff"></path></g></svg>';
 
   setTimer();
+
+}
+
+function updateMusicPlayer(file) {
+
+  jsmediatags.read(file, {
+  onSuccess: ({ tags }) => {
+
+    if(tags.artist){
+      document.getElementById('song-artist-name').innerHTML = tags.artist;
+    } else {
+      document.getElementById('song-artist-name').innerHTML = "Unknown artist";
+    }       
+
+    if (tags.picture) {
+      const picture = tags.picture;
+      const base64String = picture.data.map(byte => String.fromCharCode(byte)).join("");
+
+      const imageUrl = `data:${picture.format};base64,${btoa(base64String)}`;
+
+      albumCoverArt.style.opacity = 0;
+
+      setTimeout(() => {
+        albumCoverArt.src = imageUrl;
+
+        albumCoverArt.style.opacity = 1;
+      }, 250);
+
+    } else {
+
+      albumCoverArt.style.opacity = 0;
+
+      setTimeout(() => {
+        albumCoverArt.src = "Images/default-cover-art.png";
+
+        albumCoverArt.style.opacity = 1;
+      }, 250);
+      
+    }
+
+  },
+  onError: (error) => {
+    console.error("ID3 Read Error:", error);
+  }
+});
 
 }
 
@@ -251,8 +280,135 @@ function setTimer() {
     }, 1000);
 }
 
-prevBtnElement.addEventListener('click', () => {
-  document.getElementById('music-list-item-'+prevBtnElement.dataset.songId).click();
+function shuffleArray(array) {
+
+  let currentIndex = array.length;
+
+  while(currentIndex != 0) {
+
+    let randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+
+    [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+
+  }
+
+  console.log('array shuffled!');
+
+}
+
+shuffleBtnElement.addEventListener('click', () => {
+
+  if(!shuffleBtnElement.hasAttribute('data-shuffle-state')) {
+    shuffleBtnElement.dataset.shuffleState = 0;
+  }
+
+  if(shuffleBtnElement.dataset.shuffleState == 0) {
+
+    shuffleBtnElement.classList.add("button-toggled");
+    shuffleBtnElement.style.backgroundColor = "white";
+
+    shuffleBtnElement.dataset.shuffleState = 1;
+    shuffleArray(shuffledSongList);
+
+  } else if (shuffleBtnElement.dataset.shuffleState == 1) {
+
+    shuffleBtnElement.classList.remove("button-toggled");
+    shuffleBtnElement.removeAttribute("style");
+
+    shuffleBtnElement.dataset.shuffleState = 0;
+    shuffleSongIndex = null;
+
+  }
+
+});
+
+prevBtnElement.addEventListener('click', async () => {
+
+  console.log('Before -> '+shuffleSongIndex);
+
+  if(shuffleBtnElement.dataset.shuffleState == 1) {
+
+    if((!audio.paused && !audio.ended && audio.currentTime > 0)) {
+
+      //if(shuffleSongIndex === null || shuffleSongIndex === undefined) || String(shuffleSongIndex) === "null"
+      shuffledSongList.forEach(async (songItem, index) => {
+
+        console.log('"'+shuffleSongIndex+'"');
+
+        if(String(shuffleSongIndex) === "null") {
+
+          if(String(songItem.name).substring(0, songItem.name.length - 4).normalize("NFKC") == document.getElementById('song-name').textContent.trim().normalize("NFKC")){
+            shuffleSongIndex = index;
+          }
+
+        }
+
+      });
+
+      if(shuffleSongIndex > 0) {
+
+        shuffleSongIndex--;
+
+        shuffledSongList.forEach(async (songItem, index) => {
+          
+          if(index == shuffleSongIndex) {
+
+          const file = await songItem.getFile();
+          const url = URL.createObjectURL(file);
+          document.getElementById('song-name-div').innerHTML = '<p id="song-name" class="song-name">'+String(songItem.name).substring(0, songItem.name.length - 4)+'</p>';
+          playMusic(url);
+
+          updateMusicPlayer(file);
+
+        }
+
+        });
+
+        
+      } else {
+
+        shuffledSongList.forEach(async (songItem, index) => {
+
+          if(index == (shuffledSongList.length - 1)) {
+
+            const file = await songItem.getFile();
+            const url = URL.createObjectURL(file);
+            document.getElementById('song-name-div').innerHTML = '<p id="song-name" class="song-name">'+String(songItem.name).substring(0, songItem.name.length - 4)+'</p>';
+            playMusic(url);
+
+            updateMusicPlayer(file);
+
+          }
+
+        });
+
+      }
+
+    } else {
+
+      //play first song from shuffled list
+      shuffledSongList.forEach(async (songItem, index) => {
+
+        if(index == 0) {
+
+          const file = await songItem.getFile();
+          const url = URL.createObjectURL(file);
+          //document.getElementById('song-name-div').innerHTML = '<p id="song-name" class="song-name">'+String(songName).substring(0, songName.length - 4)+'</p>';
+          playMusic(url);
+
+          updateMusicPlayer(file);
+
+        }
+
+      });
+
+    }
+
+  } else {
+    document.getElementById('music-list-item-'+prevBtnElement.dataset.songId).click();
+  }
+  
 });
 
 playBtnElement.addEventListener('click', () => {
@@ -277,8 +433,68 @@ playBtnElement.addEventListener('click', () => {
 
 });
 
-nextBtnElement.addEventListener('click', () => {
-  document.getElementById('music-list-item-'+nextBtnElement.dataset.songId).click();  
+nextBtnElement.addEventListener('click', async () => {
+  
+  if(shuffleBtnElement.dataset.shuffleState == 1) {
+
+    shuffledSongList.forEach(async (songItem, index) => {
+
+      console.log('"'+shuffleSongIndex+'"');
+
+      if(String(shuffleSongIndex) === "null") {
+
+        if(String(songItem.name).substring(0, songItem.name.length - 4).normalize("NFKC") == document.getElementById('song-name').textContent.trim().normalize("NFKC")){
+          shuffleSongIndex = index;
+        }
+
+      }
+
+    });
+
+    if(shuffleSongIndex < shuffledSongList.length - 1) {
+
+      shuffleSongIndex++;
+
+      shuffledSongList.forEach(async (songItem, index) => {
+
+        if(index == shuffleSongIndex) {
+
+          const file = await songItem.getFile();
+          const url = URL.createObjectURL(file);
+          document.getElementById('song-name-div').innerHTML = '<p id="song-name" class="song-name">'+String(songItem.name).substring(0, songItem.name.length - 4)+'</p>';
+          playMusic(url);
+
+          updateMusicPlayer(file);
+
+        }
+
+      });
+      
+    } else {
+
+      shuffledSongList.forEach(async (songItem, index) => {
+
+        if(index == 0) {
+
+          const file = await songItem.getFile();
+          const url = URL.createObjectURL(file);
+          document.getElementById('song-name-div').innerHTML = '<p id="song-name" class="song-name">'+String(songItem.name).substring(0, songItem.name.length - 4)+'</p>';
+          playMusic(url);
+
+          updateMusicPlayer(file);
+
+        }
+
+      });
+
+    }
+
+  } else {
+
+    document.getElementById('music-list-item-'+nextBtnElement.dataset.songId).click();
+    
+  }
+    
 });
 
 repeatBtnElement.addEventListener('click', () => {
