@@ -334,8 +334,6 @@ prevBtnElement.addEventListener('click', async () => {
       //if(shuffleSongIndex === null || shuffleSongIndex === undefined) || String(shuffleSongIndex) === "null"
       shuffledSongList.forEach(async (songItem, index) => {
 
-        console.log('"'+shuffleSongIndex+'"');
-
         if(String(shuffleSongIndex) === "null") {
 
           if(String(songItem.name).substring(0, songItem.name.length - 4).normalize("NFKC") == document.getElementById('song-name').textContent.trim().normalize("NFKC")){
@@ -386,15 +384,14 @@ prevBtnElement.addEventListener('click', async () => {
       }
 
     } else {
-
-      //play first song from shuffled list
+      
       shuffledSongList.forEach(async (songItem, index) => {
 
         if(index == 0) {
 
           const file = await songItem.getFile();
           const url = URL.createObjectURL(file);
-          //document.getElementById('song-name-div').innerHTML = '<p id="song-name" class="song-name">'+String(songName).substring(0, songName.length - 4)+'</p>';
+          document.getElementById('song-name-div').innerHTML = '<p id="song-name" class="song-name">'+String(songItem.name).substring(0, songItem.name.length - 4)+'</p>';
           playMusic(url);
 
           updateMusicPlayer(file);
