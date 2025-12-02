@@ -38,6 +38,8 @@ async function getSongs() {
         playlistEl.innerHTML = "<p>No MP3 files found.</p>";
         return;
     }
+
+    audioFiles.sort();
     
     audioFiles.forEach((fileHandle, index) => {
       const playlistItem = document.createElement("div");
@@ -151,6 +153,8 @@ async function getSongs() {
 
         document.getElementById('musicList').style.justifyContent = 'space-around';
 
+        document.getElementById('close-music-list').style.display = 'none';
+
       } else {
 
         songListExpanded = 0;
@@ -163,6 +167,7 @@ async function getSongs() {
         document.getElementById('now-playing-card').style.height = '80%';
 
         document.getElementById('musicList').style.removeProperty('justify-content');
+        document.getElementById('close-music-list').style.display = 'inline-block';
 
       }
     });
