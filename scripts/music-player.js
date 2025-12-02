@@ -50,6 +50,8 @@ async function getSongs() {
       //playlistEl.innerHTML += playlistHTMLData;
       playlistEl.appendChild(playlistItem);
 
+      document.getElementById('music-list-item-'+index).dataset.songId = index;
+
       document.getElementById('music-list-item-'+index).onclick = async () => {
         const songName = fileHandle.name;
         const file = await fileHandle.getFile();
@@ -97,7 +99,23 @@ async function getSongs() {
             console.error("ID3 Read Error:", error);
           }
         });
+
+        playBtnElement.dataset.songId = index;
+
+        if(index > 0) {
+          prevBtnElement.dataset.songId = index-1;
+        } else {
+          prevBtnElement.dataset.songId = audioFiles.length - 1;
+        }
+
+        if(index < audioFiles.length - 1) {
+          nextBtnElement.dataset.songId = index+1;
+        } else {
+          nextBtnElement.dataset.songId = 0;
+        }
+
       };
+
     });
 
   } catch (err) {
@@ -108,8 +126,6 @@ async function getSongs() {
     document.getElementById('getMusic').remove();
 
     document.getElementById('music-list-controls-div').innerHTML = '<button id="expand-music-list" class="music-list-controls"> <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"> <g transform="rotate(180 12 12)"> <path d="M7 10L12 15L17 10" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path> </g> </svg> </button> <button id="close-music-list" class="music-list-controls"> <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g id="Menu / Close_SM"> <path id="Vector" d="M16 16L12 12M12 12L8 8M12 12L16 8M12 12L8 16" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g> </g></svg> </button>';
-
-    
 
     document.getElementById('close-music-list').addEventListener('click', () => {
       document.getElementById('scanned-music-list').innerHTML = '';
@@ -235,6 +251,10 @@ function setTimer() {
     }, 1000);
 }
 
+prevBtnElement.addEventListener('click', () => {
+  document.getElementById('music-list-item-'+prevBtnElement.dataset.songId).click();
+});
+
 playBtnElement.addEventListener('click', () => {
 
   if(!audio.paused && !audio.ended && audio.currentTime > 0) {
@@ -255,6 +275,10 @@ playBtnElement.addEventListener('click', () => {
 
   }
 
+});
+
+nextBtnElement.addEventListener('click', () => {
+  document.getElementById('music-list-item-'+nextBtnElement.dataset.songId).click();  
 });
 
 repeatBtnElement.addEventListener('click', () => {
