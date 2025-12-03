@@ -63,7 +63,6 @@ async function getSongs() {
     document.getElementById('music-list-controls-div').innerHTML = '<button id="expand-music-list" class="music-list-controls"> <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"> <g transform="rotate(180 12 12)"> <path d="M7 10L12 15L17 10" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path> </g> </svg> </button> <button id="close-music-list" class="music-list-controls"> <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g id="Menu / Close_SM"> <path id="Vector" d="M16 16L12 12M12 12L8 8M12 12L16 8M12 12L8 16" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g> </g></svg> </button>';
 
     renderScannedListControls();
-    
 
   }
   
@@ -325,11 +324,13 @@ shuffleBtnElement.addEventListener('click', () => {
 
 prevBtnElement.addEventListener('click', async () => {
 
-  console.log('Before -> '+shuffleSongIndex);
-
   if(shuffleBtnElement.dataset.shuffleState == 1) {
 
-    if((!audio.paused && !audio.ended && audio.currentTime > 0)) {
+    if(!audio.paused && !audio.ended && audio.currentTime >= 11) {
+
+      audio.currentTime = 0;
+
+    } else if(!audio.paused && !audio.ended && (audio.currentTime > 0 && audio.currentTime < 11)) {
 
       //if(shuffleSongIndex === null || shuffleSongIndex === undefined) || String(shuffleSongIndex) === "null"
       shuffledSongList.forEach(async (songItem, index) => {
@@ -384,7 +385,7 @@ prevBtnElement.addEventListener('click', async () => {
       }
 
     } else {
-      
+
       shuffledSongList.forEach(async (songItem, index) => {
 
         if(index == 0) {
@@ -403,7 +404,17 @@ prevBtnElement.addEventListener('click', async () => {
     }
 
   } else {
-    document.getElementById('music-list-item-'+prevBtnElement.dataset.songId).click();
+
+    if(!audio.paused && !audio.ended && audio.currentTime >= 11) {
+
+      audio.currentTime = 0;
+
+    } else if(!audio.paused && !audio.ended && (audio.currentTime > 0 && audio.currentTime < 11)) {
+
+      document.getElementById('music-list-item-'+prevBtnElement.dataset.songId).click();
+
+    }
+    
   }
   
 });
