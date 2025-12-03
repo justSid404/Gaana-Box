@@ -201,6 +201,17 @@ button:active
   justify-content: space-between;
 }
 
+.song-start-time-blank
+{
+  position: relative;
+
+  background: rgb(225, 225, 225);
+
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+}
+
 .song-time-bar-div
 {
   display: flex;
@@ -208,14 +219,30 @@ button:active
   justify-content: center;
 }
 
-.song-start-time-blank
-{
-  background: rgb(225, 225, 225);
-}
-
 .song-time-bar-filled
 {
+  position: absolute;
+
+  z-index:1;
+
   background: #F25912;
+}
+
+.song-time-bar-touch
+{
+
+  position: relative;
+
+  z-index:2;
+
+  /* background: red;*/
+
+  padding: 0px 0px 0px 0px;
+  margin: 0px 0px 0px 0px;
+
+  width: 2%;
+  height: 100%;
+
 }
 
 .media-controls-div
