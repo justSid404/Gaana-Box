@@ -280,7 +280,11 @@ function setTimer() {
 
         clearInterval(intervalId);
 
-        if(repeatDefault == repeatStages[2]) {
+        if(repeatDefault == repeatStages[1]) {
+
+          document.getElementById('next-song-button').click();
+          
+        } else if(repeatDefault == repeatStages[2]) {
 
           audio.play();
 
