@@ -613,6 +613,9 @@ button:active
     /*padding: 15px 15px 15px 15px;*/
     padding: 1.61vh 3.49vw;
     margin: 0px 0px 0px 0px;
+
+    width: 100%;
+    height: 100%;
   }
   
   .music-player-main-container
