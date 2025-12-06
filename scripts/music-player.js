@@ -23,6 +23,8 @@ let songLength = 0;
 let songListExpanded = 0;
 let intervalId = "";
 
+let totalNoOfSongs = 0;
+
 async function getSongs() {
 
   let dirHandle;
@@ -44,6 +46,8 @@ async function getSongs() {
       if (audioFiles.length === 0) {
         playlistEl.innerHTML = "<p>No MP3 files found.</p>";
         return;
+      } else {
+        totalNoOfSongs = audioFiles.length;
       }
 
       playlistEl.innerHTML = "";
@@ -64,7 +68,7 @@ async function getSongs() {
 
         selectedFiles = event.target.files;
 
-        for (const file of selectedFiles) {
+        for await (const file of selectedFiles) {
           if (file.name.toLowerCase().endsWith(".mp3")) {
 
             const handle = {
@@ -83,6 +87,8 @@ async function getSongs() {
         if (audioFiles.length === 0) {
           playlistEl.innerHTML = "<p>No MP3 files found.</p>";
           return;
+        } else {
+          totalNoOfSongs = audioFiles.length;
         }
 
         playlistEl.innerHTML = "";
@@ -106,19 +112,10 @@ async function getSongs() {
   } catch (err) {
       console.error(err);
   }
-
-  if(document.getElementById('scanned-music-list').innerHTML.length > 0 && selectFolder) {
-    document.getElementById('getMusic').remove();
-
-    document.getElementById('music-list-controls-div').innerHTML = '<button id="expand-music-list" class="music-list-controls"> <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"> <g transform="rotate(180 12 12)"> <path d="M7 10L12 15L17 10" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path> </g> </svg> </button> <button id="close-music-list" class="music-list-controls"> <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g id="Menu / Close_SM"> <path id="Vector" d="M16 16L12 12M12 12L8 8M12 12L16 8M12 12L8 16" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g> </g></svg> </button>';
-
-    renderScannedListControls();
-
-  }
   
 }
 
-function renderSongList(audioFiles) {
+async function renderSongList(audioFiles) {
   
   audioFiles.forEach((fileHandle, index) => {
     
@@ -159,9 +156,19 @@ function renderSongList(audioFiles) {
 
   });
 
+  // if(document.getElementById('scanned-music-list').innerHTML.length > 0 && selectFolder)
+  if(totalNoOfSongs > 0 && selectFolder) {
+    document.getElementById('getMusic').remove();
+
+    document.getElementById('music-list-controls-div').innerHTML = '<button id="expand-music-list" class="music-list-controls"> <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"> <g transform="rotate(180 12 12)"> <path d="M7 10L12 15L17 10" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path> </g> </svg> </button> <button id="close-music-list" class="music-list-controls"> <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g id="Menu / Close_SM"> <path id="Vector" d="M16 16L12 12M12 12L8 8M12 12L16 8M12 12L8 16" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g> </g></svg> </button>';
+
+    renderScannedListControls();
+
+  }
+
 }
 
-function renderSongList_Alt(audioFiles) {
+async function renderSongList_Alt(audioFiles) {
   
   audioFiles.forEach((fileHandle, index) => {
     
@@ -203,11 +210,23 @@ function renderSongList_Alt(audioFiles) {
 
   });
 
+  // if(document.getElementById('scanned-music-list').innerHTML.length > 0 && selectFolder)
+  if(totalNoOfSongs > 0 && selectFolder) {
+    document.getElementById('getMusic').remove();
+
+    document.getElementById('music-list-controls-div').innerHTML = '<button id="expand-music-list" class="music-list-controls"> <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"> <g transform="rotate(180 12 12)"> <path d="M7 10L12 15L17 10" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path> </g> </svg> </button> <button id="close-music-list" class="music-list-controls"> <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g id="Menu / Close_SM"> <path id="Vector" d="M16 16L12 12M12 12L8 8M12 12L16 8M12 12L8 16" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g> </g></svg> </button>';
+
+    renderScannedListControls();
+
+  }
+
 }
 
 function renderScannedListControls() {
 
   document.getElementById('close-music-list').addEventListener('click', () => {
+
+    totalNoOfSongs = 0;
 
     document.getElementById('scanned-music-list').innerHTML = '';
 
