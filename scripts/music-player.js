@@ -24,34 +24,84 @@ let songListExpanded = 0;
 let intervalId = "";
 
 async function getSongs() {
+
+  let dirHandle;
+  
+  let audioFiles = [];
+
   try {
-    const dirHandle = await window.showDirectoryPicker();
-    playlistEl.innerHTML = "";
-    
-    const audioFiles = [];
 
-    let playlistHTMLData = "";
+    if("showDirectoryPicker" in window) {
 
-    for await (const entry of dirHandle.values()) {
-      if (entry.kind === "file" && entry.name.toLowerCase().endsWith(".mp3")) {
-        audioFiles.push(entry);
+      dirHandle = await window.showDirectoryPicker();
+
+      for await (const entry of dirHandle.values()) {
+        if (entry.kind === "file" && entry.name.toLowerCase().endsWith(".mp3")) {
+          audioFiles.push(entry);
+        }
       }
+
+      if (audioFiles.length === 0) {
+        playlistEl.innerHTML = "<p>No MP3 files found.</p>";
+        return;
+      }
+
+      playlistEl.innerHTML = "";
+
+      audioFiles.sort();
+
+      shuffledSongList = structuredClone(audioFiles);
+
+      if(shuffleBtnElement.hasAttribute('data-shuffle-state') && shuffleBtnElement.dataset.shuffleState == 1) {
+        shuffleArray(shuffledSongList);
+      }
+
+      renderSongList(audioFiles);
+
+    } else {
+
+      document.getElementById('folderInput').addEventListener('change', async (event) => {
+
+        selectedFiles = event.target.files;
+
+        for (const file of selectedFiles) {
+          if (file.name.toLowerCase().endsWith(".mp3")) {
+
+            const handle = {
+              kind: "file",
+              name: file.name,
+              // getFile: async () => file
+              // getFile: file
+              file: file
+            };
+
+            audioFiles.push(handle);
+
+          }
+        }
+
+        if (audioFiles.length === 0) {
+          playlistEl.innerHTML = "<p>No MP3 files found.</p>";
+          return;
+        }
+
+        playlistEl.innerHTML = "";
+
+        audioFiles.sort();
+        
+        shuffledSongList = structuredClone(audioFiles);
+
+        if(shuffleBtnElement.hasAttribute('data-shuffle-state') && shuffleBtnElement.dataset.shuffleState == 1) {
+          shuffleArray(shuffledSongList);
+        }
+
+        renderSongList_Alt(audioFiles);
+
+      });
+
+      document.getElementById('folderInput').click();
+
     }
-
-    if (audioFiles.length === 0) {
-      playlistEl.innerHTML = "<p>No MP3 files found.</p>";
-      return;
-    }
-
-    audioFiles.sort();
-    //shuffledSongList = audioFiles;
-    shuffledSongList = structuredClone(audioFiles);
-
-    if(shuffleBtnElement.hasAttribute('data-shuffle-state') && shuffleBtnElement.dataset.shuffleState == 1) {
-      shuffleArray(shuffledSongList);
-    }
-
-    renderSongList(audioFiles);
 
   } catch (err) {
       console.error(err);
@@ -71,42 +121,87 @@ async function getSongs() {
 function renderSongList(audioFiles) {
   
   audioFiles.forEach((fileHandle, index) => {
-  const playlistItem = document.createElement("div");
-  playlistItem.id = "music-list-item-" + index;
-  playlistItem.className = "music-list-item";
-  playlistItem.textContent = fileHandle.name;
+    
+    const playlistItem = document.createElement("div");
+    playlistItem.id = "music-list-item-" + index;
+    playlistItem.className = "music-list-item";
+    playlistItem.textContent = fileHandle.name;
 
-  //playlistEl.innerHTML += playlistHTMLData;
-  playlistEl.appendChild(playlistItem);
+    //playlistEl.innerHTML += playlistHTMLData;
+    playlistEl.appendChild(playlistItem);
 
-  document.getElementById('music-list-item-'+index).dataset.songId = index;
+    document.getElementById('music-list-item-'+index).dataset.songId = index;
 
-  document.getElementById('music-list-item-'+index).onclick = async () => {
-    const songName = fileHandle.name;
-    const file = await fileHandle.getFile();
-    const url = URL.createObjectURL(file);
-    document.getElementById('song-name-div').innerHTML = '<p id="song-name" class="song-name">'+String(songName).substring(0, songName.length - 4)+'</p>';
-    playMusic(url);
+    document.getElementById('music-list-item-'+index).onclick = async () => {
+      const songName = fileHandle.name;
+      const file = await fileHandle.getFile();
+      const url = URL.createObjectURL(file);
+      document.getElementById('song-name-div').innerHTML = '<p id="song-name" class="song-name">'+String(songName).substring(0, songName.length - 4)+'</p>';
+      playMusic(url);
 
-    updateMusicPlayer(file);
+      updateMusicPlayer(file);
 
-    playBtnElement.dataset.songId = index;
+      playBtnElement.dataset.songId = index;
 
-    if(index > 0) {
-      prevBtnElement.dataset.songId = index-1;
-    } else {
-      prevBtnElement.dataset.songId = audioFiles.length - 1;
-    }
+      if(index > 0) {
+        prevBtnElement.dataset.songId = index-1;
+      } else {
+        prevBtnElement.dataset.songId = audioFiles.length - 1;
+      }
 
-    if(index < audioFiles.length - 1) {
-      nextBtnElement.dataset.songId = index+1;
-    } else {
-      nextBtnElement.dataset.songId = 0;
-    }
+      if(index < audioFiles.length - 1) {
+        nextBtnElement.dataset.songId = index+1;
+      } else {
+        nextBtnElement.dataset.songId = 0;
+      }
 
-  };
+    };
 
-});
+  });
+
+}
+
+function renderSongList_Alt(audioFiles) {
+  
+  audioFiles.forEach((fileHandle, index) => {
+    
+    const playlistItem = document.createElement("div");
+    playlistItem.id = "music-list-item-" + index;
+    playlistItem.className = "music-list-item";
+    playlistItem.textContent = fileHandle.name;
+
+    //playlistEl.innerHTML += playlistHTMLData;
+    playlistEl.appendChild(playlistItem);
+
+    document.getElementById('music-list-item-'+index).dataset.songId = index;
+
+    document.getElementById('music-list-item-'+index).onclick = async () => {
+      const songName = fileHandle.name;
+      // const file = await fileHandle.getFile();
+      const file = fileHandle.file;
+      const url = URL.createObjectURL(file);
+      document.getElementById('song-name-div').innerHTML = '<p id="song-name" class="song-name">'+String(songName).substring(0, songName.length - 4)+'</p>';
+      playMusic(url);
+
+      updateMusicPlayer(file);
+
+      playBtnElement.dataset.songId = index;
+
+      if(index > 0) {
+        prevBtnElement.dataset.songId = index-1;
+      } else {
+        prevBtnElement.dataset.songId = audioFiles.length - 1;
+      }
+
+      if(index < audioFiles.length - 1) {
+        nextBtnElement.dataset.songId = index+1;
+      } else {
+        nextBtnElement.dataset.songId = 0;
+      }
+
+    };
+
+  });
 
 }
 
@@ -371,12 +466,18 @@ prevBtnElement.addEventListener('click', async () => {
           
           if(index == shuffleSongIndex) {
 
-          const file = await songItem.getFile();
-          const url = URL.createObjectURL(file);
-          document.getElementById('song-name-div').innerHTML = '<p id="song-name" class="song-name">'+String(songItem.name).substring(0, songItem.name.length - 4)+'</p>';
-          playMusic(url);
+            // const file = await songItem.getFile();
+            let file;
+            if("showDirectoryPicker" in window) {
+              file = await songItem.getFile();
+            } else {
+              file = songItem.file;
+            }
+            const url = URL.createObjectURL(file);
+            document.getElementById('song-name-div').innerHTML = '<p id="song-name" class="song-name">'+String(songItem.name).substring(0, songItem.name.length - 4)+'</p>';
+            playMusic(url);
 
-          updateMusicPlayer(file);
+            updateMusicPlayer(file);
 
         }
 
@@ -389,7 +490,13 @@ prevBtnElement.addEventListener('click', async () => {
 
           if(index == (shuffledSongList.length - 1)) {
 
-            const file = await songItem.getFile();
+            // const file = await songItem.getFile();
+            let file;
+            if("showDirectoryPicker" in window) {
+              file = await songItem.getFile();
+            } else {
+              file = songItem.file;
+            }
             const url = URL.createObjectURL(file);
             document.getElementById('song-name-div').innerHTML = '<p id="song-name" class="song-name">'+String(songItem.name).substring(0, songItem.name.length - 4)+'</p>';
             playMusic(url);
@@ -408,7 +515,13 @@ prevBtnElement.addEventListener('click', async () => {
 
         if(index == 0) {
 
-          const file = await songItem.getFile();
+          // const file = await songItem.getFile();
+          let file;
+          if("showDirectoryPicker" in window) {
+            file = await songItem.getFile();
+          } else {
+            file = songItem.file;
+          }
           const url = URL.createObjectURL(file);
           document.getElementById('song-name-div').innerHTML = '<p id="song-name" class="song-name">'+String(songItem.name).substring(0, songItem.name.length - 4)+'</p>';
           playMusic(url);
@@ -483,8 +596,13 @@ nextBtnElement.addEventListener('click', async () => {
       shuffledSongList.forEach(async (songItem, index) => {
 
         if(index == shuffleSongIndex) {
-
-          const file = await songItem.getFile();
+          // const file = await songItem.getFile();
+          let file;
+          if("showDirectoryPicker" in window) {
+            file = await songItem.getFile();
+          } else {
+            file = songItem.file;
+          }
           const url = URL.createObjectURL(file);
           document.getElementById('song-name-div').innerHTML = '<p id="song-name" class="song-name">'+String(songItem.name).substring(0, songItem.name.length - 4)+'</p>';
           playMusic(url);
@@ -501,7 +619,13 @@ nextBtnElement.addEventListener('click', async () => {
 
         if(index == 0) {
 
-          const file = await songItem.getFile();
+          // const file = await songItem.getFile();
+          let file;
+          if("showDirectoryPicker" in window) {
+            file = await songItem.getFile();
+          } else {
+            file = songItem.file;
+          }
           const url = URL.createObjectURL(file);
           document.getElementById('song-name-div').innerHTML = '<p id="song-name" class="song-name">'+String(songItem.name).substring(0, songItem.name.length - 4)+'</p>';
           playMusic(url);
