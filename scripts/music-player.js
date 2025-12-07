@@ -686,3 +686,13 @@ repeatBtnElement.addEventListener('click', () => {
   }
 
 });
+
+if("serviceWorker" in navigator) {
+  window.addEventListener("load", function() {
+    navigator.serviceWorker.register("/scripts/service-worker.js").then(function() {
+      console.log("Service worker registered.");
+    }).catch(function(err) {
+      console.log("Service worker was not registered.");
+    })
+  })
+}
