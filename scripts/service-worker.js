@@ -1,7 +1,7 @@
 let assets = [
   "/",
   "/index.html",
-  "/Images/default-cover-art.png",
+  "/images/default-cover-art.png",
   "/scripts/music-player.js",
   "/styles/default-theme.css"
 ]
