@@ -1,9 +1,9 @@
 let assets = [
-  "/",
-  "/index.html",
-  "/images/default-cover-art.png",
-  "/scripts/music-player.js",
-  "/styles/default-theme.css"
+  "./",
+  "./index.html",
+  "./images/default-cover-art.png",
+  "./scripts/music-player.js",
+  "./styles/default-theme.css"
 ]
 
 self.addEventListener("install", function(installEvent) {
