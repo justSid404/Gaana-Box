@@ -363,7 +363,7 @@ function updateMusicPlayer(file) {
       albumCoverArt.style.opacity = 0;
 
       setTimeout(() => {
-        albumCoverArt.src = "Images/default-cover-art.png";
+        albumCoverArt.src = "images/default-cover-art.png";
 
         albumCoverArt.style.opacity = 1;
       }, 250);
