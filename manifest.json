@@ -1,8 +1,7 @@
 {
   "name": "Gaana-Box",
   "short_name": "Gaana-Box",
-  "start_url": "/Gaana-Box/",
-  "scope": "/Gaana-Box/",
+  "start_url": "./",
   "display": "standalone",
   "icons": [
     {
