@@ -9,7 +9,8 @@ button
 
 button:hover
 {
-  background-color: white;
+  /* background-color: white; */
+  background-color: hsl(0 0 95);
 }
 
 button svg
@@ -39,11 +40,14 @@ button:active
   flex-direction: row;
   text-align: left;
 
-  background: #412B6B;
+  /* background: #412B6B; */
+  /* background: hsl(270 50 5); */
+  background: hsl(270 50 0);
 
   font-family: "Open Sans";
   font-weight: 1000;
-  color: white;
+  /*color: white; */
+  color: hsl(0 0 95);
 }
 
 .music-player-main-container
@@ -56,7 +60,12 @@ button:active
 
 .musicList
 {
-  background: #211832;
+  /* background: #211832; */
+  /* background: hsl(270 50 10);
+  border: solid clamp(1px, 0.104vw + 0.5px, 3px) hsl(270 50 30); */
+  background: hsl(0 0 5);
+  border: solid clamp(1px, 0.104vw + 0.5px, 3px) hsl(0 0 30);
+  background: hsl();
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -67,8 +76,10 @@ button:active
 
 .getMusic
 {
-  background: #F25912;
-  color: white;
+  /* background: #F25912; */
+  background: hsl(20 90 50);
+  /*color: white; */
+  color: hsl(0 0 95);
 
   font-family: "Open Sans";
   font-weight: 1000;
@@ -96,7 +107,9 @@ button:active
 
 .music-list-item
 {
-  background: #5C3E94;
+  /* background: #5C3E94; */
+  /* background: hsl(270 50 25); */
+  background: hsl(0 0 25);
 
   cursor: pointer;
 
@@ -105,12 +118,18 @@ button:active
 
 .music-list-item:hover
 {
-  background: #F25912;
+  /* background: #F25912; */
+  background: hsl(20 90 50);
 }
 
 .now-playing-card
 {
-  background: #211832;
+  /* background: #211832; */
+  /* background: hsl(270 50 10); */
+  /* background: linear-gradient(hsl(270 50 25), hsl(270 50 10));
+  border: solid clamp(1px, 0.104vw + 0.5px, 3px) hsl(270 50 30); */
+  background: linear-gradient(hsl(0 0 20), hsl(0 0 5));
+  border: solid clamp(1px, 0.104vw + 0.5px, 3px) hsl(0 0 30);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -150,6 +169,10 @@ button:active
   align-items: center ;
 }
 
+.album-cover-div {
+  text-shadow: 0px 0px 1px black;
+}
+
 .album-cover
 {
   /*object-fit: fill;*/
@@ -169,6 +192,15 @@ button:active
   align-items: center;
   text-align: center;
   align-self: flex-start;
+}
+
+.song-name-div {
+  color: hsl(0 0 95);
+}
+
+.song-artist-name-div {
+  color: hsl(0 0 70);
+  font-weight: 400;
 }
 
 .song-name-div, .song-artist-name-div
@@ -196,6 +228,7 @@ button:active
 
 .song-time-div
 {
+  color: hsl(0 0 95);
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -205,7 +238,8 @@ button:active
 {
   position: relative;
 
-  background: rgb(225, 225, 225);
+  /* background: rgb(225, 225, 225); */
+  background: hsl(0 0 95);
 
   display: flex;
   flex-direction: row;
@@ -214,6 +248,7 @@ button:active
 
 .song-time-bar-div
 {
+  color: hsl(0 0 70);
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -225,7 +260,8 @@ button:active
 
   z-index:1;
 
-  background: #F25912;
+  /* background: #F25912; */
+  background: hsl(20 90 50);
 }
 
 .song-time-bar-touch
@@ -258,7 +294,9 @@ button:active
 
 .media-control-button
 {
-  background: #F25912;
+  /* background: #F25912; */
+  background: hsl(20 90 50);
+  /* background: linear-gradient(hsl(20 90 50), hsl(20 90 50)); */
 
   border: none;
 
@@ -268,6 +306,11 @@ button:active
 .media-control-button-icon
 {
   object-fit: cover;
+}
+
+#play-pause-button, #prev-song-button, #next-song-button, #shuffle-song-button, #repeat-song-button, #expand-music-list, #close-music-list, #getMusic {
+  /* border: solid clamp(1px, 0.104vw + 0.5px, 3px) hsl(20 90 65); */
+  box-shadow: 0px 5px 10px hsl(0 0 0);
 }
 
 /* Landscape / wider than tall */
@@ -647,7 +690,8 @@ button:active
 
   #expand-music-list
   {
-    background: #F25912;
+  /* background: #F25912; */
+    background: hsl(20 90 50);
     border: none;
     border-radius: 100%;
 
@@ -655,7 +699,7 @@ button:active
     min-width: 8vw;
     aspect-ratio: 1 / 1;
 
-    margin: 0px 0px 0px 37.5vw;
+    margin: 0px 0px 0px 43.5%;
   }
 
   #close-music-list
